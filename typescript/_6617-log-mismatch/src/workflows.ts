@@ -1,10 +1,9 @@
-import {log, proxyActivities, sleep, workflowInfo} from '@temporalio/workflow';
+import {log, proxyActivities} from '@temporalio/workflow';
 import type * as activities from './activities';
 
-const { secondFunction} = proxyActivities<typeof activities>({
+const { greet } = proxyActivities<typeof activities>({
     startToCloseTimeout: '1 minute',
 });
-
 
 export function initWorkflowLogger() {
     console.log = (...args) => log.info(...args);
@@ -16,23 +15,7 @@ export function initWorkflowLogger() {
 }
 
 export async function example(name: string): Promise<string> {
-
     initWorkflowLogger()
-    console.log("workflow_id [" + workflowInfo().workflowId + "] ;  "
-        + " before invoking activity  ")
-
-    await sleep('5s')
-
-    const s = await secondFunction(workflowInfo().runId);
-
-    console.log(
-        "workflow id [" + workflowInfo().workflowId + "] ;  "
-        + "run id [" + workflowInfo().runId + "] ;  "
-        + " after invoking activity  ")
-
+    const s = await greet(name);
     return s;
 }
-
-
-
-

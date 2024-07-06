@@ -1,5 +1,4 @@
-import {Context} from "@temporalio/activity";
-
+import { Context } from "@temporalio/activity";
 
 export function initActivityLogger() {
     const log = Context.current().log;
@@ -12,27 +11,16 @@ export function initActivityLogger() {
     console.trace = (...args) => log.debug(...args);
 }
 
-export async function secondFunction(a: string): Promise<string> {
-    initActivityLogger();
-
-    const activityInfo = Context.current().info;
-    console.log(
-        "activity_workflow_id  [" + activityInfo.workflowExecution.workflowId + "] ;  "
-        +
-        "activity_run_id  [" + activityInfo.workflowExecution.runId + "] ;  "
-        + "activityType  [" + activityInfo.activityType + "] + input [" + a + "]")
-    return await firstFunction(a);
+const delay = (ms: number) => {
+    return new Promise( resolve => setTimeout(resolve, ms) );
 }
 
-export async function firstFunction(a: string): Promise<string> {
+export async function greet(name: string): Promise<string> {
     initActivityLogger();
 
-    const activityInfo = Context.current().info;
-    console.log(
-        "activity_workflow_id  [" + activityInfo.workflowExecution.workflowId + "] ;  "
-        +
-        "activity_run_id  [" + activityInfo.workflowExecution.runId + "] ;  "
-        + "activityType  [" + activityInfo.activityType + "] + input [" + a + "]")
-    return `Hello!`;
-}
+    await delay(200);
 
+    console.log(name);
+
+    return "test";
+}

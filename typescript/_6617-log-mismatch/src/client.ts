@@ -4,32 +4,28 @@ import { example } from './workflows';
 import { nanoid } from 'nanoid';
 
 async function run() {
-  // Connect to the default Server location
   const connection = await Connection.connect({ address: 'localhost:7233' });
-
   const client = new Client({
     connection,
   });
 
-  for (let i = 0; i < 50000; i++) {
-    const handle = await client.workflow.start(example, {
-      taskQueue: 'hello-world',
-      args: ['Temporal'],
-      workflowId: 'workflow-' + nanoid(),
-    });
-    console.log(`Started workflow ${handle.workflowId}`);
-
-//    await new Promise(r => setTimeout(r, 10));
-
-
-//    console.log(await handle.result());
-
+  const promises = []
+  for (let i = 0; i < 10; i++) {
+    for (let j = 0; j < 10; j++) {
+      promises.push(
+        client.workflow.start(example, {
+          taskQueue: 'hello-world',
+          args: [`workflow-${j}`],
+          workflowId: `workflow-${j}-` + nanoid(),
+        })
+      );
+    }
   }
 
+  await Promise.all(promises)
 }
 
 run().catch((err) => {
   console.error(err);
   process.exit(1);
 });
-
